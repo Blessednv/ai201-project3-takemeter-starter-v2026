@@ -57,11 +57,14 @@ reason) or `broad_question` (asking a general question).
 1. Specific names vs. general description. Some posts name an exact tool, error
    or setup, like "M-PESA Daraja callbacks" or "Trojan:JS/EtherHiding". Others
    only say "I clicked something and ads keep popping up".
+
 2. Says what they already tried. Some posts list steps taken, like
    disconnecting the PC and changing passwords. Others go straight to "should I
    be worried?".
+
 3. Gives a reason or a position. Some posts explain why they think something.
    Others only ask "has your company changed anything?".
+   
 4. One narrow question vs. a broad one. "Which request attributes must the PDP
    source independently?" has one answer to look for. "Which certs should I
    get?" is open-ended.
