@@ -48,9 +48,9 @@ three CSV files that I'm keeping. I leave out any post that contains a link.
 Most of them are link-only news posts with almost no text to judge, and links
 also make the labeling less consistent. The classifier reads a post and
 sorts it into one of four labels based on what the writer included:
-`specific_problem` (asking for help with a detailed problem), `vague_worry`
-(worried but gives no details), `reasoned_opinion` (sharing an opinion with a
-reason) or `broad_question` (asking a general question).
+`specific_problem` (asking for help or advice about a named thing), `vague_worry`
+(worried but names nothing specific), `reasoned_opinion` (sharing an opinion
+with a reason) or `broad_question` (asking a general question).
 
 **Four distinctions I saw in the text:**
 
@@ -83,15 +83,16 @@ reason) or `broad_question` (asking a general question).
 
 Each post gets exactly one of four labels. The labels describe what is in the
 text (what the writer included), not whether the post is "good" or "bad". A
-"technical specific" below means a concrete detail an expert could look up or
-check: an error message, a detection name, a program or process name, a file, a
-setting, or a named API. Naming a phone or an app alone (like "iPhone" or
-"TikTok") does not count.
+A "named thing" below means something concrete an expert could look up or
+check: a product, vendor, vulnerability (like a CVE), API, error message,
+detection name, process, file, setting or role. Naming a phone or an app alone
+(like "iPhone" or "TikTok") does not count.
 
 ### `specific_problem`
 
-**Definition:** The writer asks for help with a situation and names at least
-one technical specific.
+**Definition:** The writer asks for help or advice about a named thing: a
+product, vendor, vulnerability, API, error message, detection name, process,
+file, setting or role.
 
 **Example 1:**
 > "I started getting a captcha when I opened google chrome incognito tab ...
@@ -111,9 +112,9 @@ one technical specific.
 
 ### `vague_worry`
 
-**Definition:** The writer describes a scare or symptom with no technical
-specifics, only what they saw or felt, and asks whether something is wrong.
-What the person did, like "I hung up", does not count as a technical detail.
+**Definition:** The writer describes a scare or symptom with no named thing,
+only what they saw or felt, and asks whether something is wrong. What the
+person did, like "I hung up", does not count as a technical detail.
 
 **Example 1:**
 > "recently ive clicked a suspicious link, i have clicked something and all of
@@ -154,9 +155,9 @@ question.
 
 ### `broad_question`
 
-**Definition:** The writer asks for general advice or opinions that anyone could
-answer without examining the writer's own system, even if they add some
-background.
+**Definition:** The writer asks an open-ended question for general advice,
+opinions or experiences, where no particular named thing is the subject, so it
+could be asked of any security person about the field in general.
 
 **Example 1:**
 > "I see lots of articles and discussions on AI-enabled traditional
@@ -197,6 +198,14 @@ it is `broad_question`. The post above keeps its claim (breach reports show the
 same pattern: leaked tokens and forgotten apps, not phishing), so I label it
 `reasoned_opinion`.
 
+**A second rule, for `specific_problem` vs. `broad_question`:** If a named thing
+(a product, vendor, vulnerability, API, error, file, setting or role) is the
+subject of the question, the post is `specific_problem`. If nothing is named, it
+is `vague_worry` (a personal scare) or `broad_question` (a general question). I
+added this after testing my definitions on my first 50 cold-labeled posts, where
+my first wording left many narrow questions about a named product or
+vulnerability ending up in the wrong label.
+
 
 
 ---
@@ -207,44 +216,121 @@ same pattern: leaked tokens and forgotten apps, not phishing), so I label it
      cases. -->
 
 **Where the posts came from:**
+Public Reddit posts from three cybersecurity communities (r/cybersecurity,
+r/AskNetsec and r/cybersecurity_help), collected in October 2026 from Reddit's
+public RSS feeds. No login was needed. I kept only text-only posts: I dropped
+posts with empty bodies, links, images, video or emoji, duplicates, and posts in
+other languages. That left 428 posts. I also collected comments from
+r/SecurityCareerAdvice but did not use them.
 
 **How I labelled them:** <!-- Cold first? Pre-labelled with AI and corrected?
 Say so plainly — the disclosure is required, not penalised. -->
+I labelled the first 50 posts cold: by hand, using only my own definitions, with
+no AI help. I made every label decision on those 50 myself. For a few hard cases
+I asked Claude to review my reasoning or suggest wording for the note. I marked
+these rows `cold`.
+
+The other 378 posts were pre-labelled by AI. Fresh Claude instances, given only
+my label definitions and decision rules, suggested a label for each post. I then
+read the rows and checked the labels, correcting 2. Rows are marked
+`pre-labeled, checked` or `pre-labeled, corrected`.
+
+Before pre-labelling, I tested my definitions by having an AI label my 50 cold
+posts without seeing my labels. Its agreement with me was 64% at first, which led
+me to tighten the `specific_problem` definition. The tightened wording raised
+agreement to 72%.
 
 **Counts per label:**
 
 | Label | Count | Share |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-| **Total** |  | 100% |
+| `specific_problem` | 134 | 31.3% |
+| `vague_worry` | 87 | 20.3% |
+| `reasoned_opinion` | 66 | 15.4% |
+| `broad_question` | 141 | 32.9% |
+| **Total** | 428 | 100% |
 
-**Three hard cases**
+**Six hard cases**
+
+These are six of the 14 hard cases I recorded. All 14 are in `hard_cases.csv`.
 
 <!-- Any post that made you pause: what it was, which two labels it could have
      been, and what you chose. These are worth more than the easy 190. -->
 
 **1.**
-> *The post:*
+> *The post:* "If an AI agent was authorized correctly, but the evidence it used
+> changes before execution, where should the security control live?" It gives a
+> worked example (a balance of $10,000 becomes $2,000 before an $8,000 transfer
+> runs) and then asks where teams enforce the boundary.
 >
-> *Could have been:*
+> *Could have been:* `reasoned_opinion` or `broad_question`.
 >
-> *I chose, because:*
+> *I chose* `reasoned_opinion`, because with the questions removed, the post
+> still argues that the failure is state changing between observation and
+> execution, backed by a worked example. This is the case my decision rule was
+> written for.
 
 **2.**
-> *The post:*
+> *The post:* "What are the most common messaging platforms used as command and
+> control networks (excluding discord, signal, and telegram)."
 >
-> *Could have been:*
+> *Could have been:* `broad_question` or `specific_problem`.
 >
-> *I chose, because:*
+> *I chose* `broad_question`, because it is a general factual question with no
+> situation of the writer's own, even though it is narrow and technical.
 
 **3.**
-> *The post:*
+> *The post:* "My wife just noticed in her past orders, a canceled order for PS5
+> with a comment ... It shows as canceled and total is "0$" ... What could have
+> possible happened?"
 >
-> *Could have been:*
+> *Could have been:* `vague_worry` or `specific_problem`.
 >
-> *I chose, because:*
+> *I chose* `vague_worry`, because it is a personal scare with no named technical
+> thing. Target is a store account, which does not count, and the order details
+> are what the writer saw, not technical specifics.
+
+**4.**
+> *The post:* "For people who have integrated monitoring or threat-intel feeds,
+> which production detail caused the most trouble: auth, event delivery,
+> coverage gaps, or remediation state handling?" Before that question, it argues
+> that "Webhooks are especially easy to underestimate. A monitoring product can
+> look fine in staging and still lose alerts during a deploy, timeout, or
+> signature-validation mistake months later." It also reads partly like a
+> promotional article.
+>
+> *Could have been:* `specific_problem` or `reasoned_opinion`.
+>
+> *I chose* `specific_problem`, because the post is about integrating monitoring
+> and threat-intel APIs and names concrete details like webhooks, signature
+> validation and a DPA. It could be `reasoned_opinion` because it argues, with
+> reasons, that webhooks are easy to underestimate.
+
+**5.**
+> *The post:* "What identity verification API are you using in production across
+> a lot of countries?" The writer describes poor pass rates on documents outside
+> the US and Western Europe and slow support, and ends: "If you are running one of
+> these in prod across a lot of countries, what are you on and would you pick it
+> again?"
+>
+> *Could have been:* `specific_problem` or `broad_question`.
+>
+> *I chose* `specific_problem`, because the writer describes a concrete situation
+> (low pass rates on non-US documents, slow support, tests with a worn national ID)
+> and asks about webhooks and AML screening. It could be `broad_question` because
+> the final ask is open to any reader.
+
+**6.**
+> *The post:* "Possible opportunity? I’m given a weird opportunity and I’m
+> unsure how to go about it to make the most of it." A friend sent the writer
+> equipment, and they ask how to use it to reach their cybersecurity career goals.
+>
+> *Could have been:* `vague_worry` or `broad_question`.
+>
+> *I chose* `vague_worry`, because the writer sounds unsure how to make the most
+> of the opportunity and apologizes for asking. It is a weak fit, since there is
+> no scare or symptom. It could be `broad_question` because the main ask is
+> general career advice that anyone could answer.
 
 ---
 

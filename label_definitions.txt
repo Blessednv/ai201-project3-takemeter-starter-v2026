@@ -5,6 +5,7 @@
 #
 # Delete the examples below and put yours in.
 
-analysis: makes an argument backed by a specific, checkable fact
-hot_take: a confident claim with no support offered
-reaction: an immediate response to something that just happened
+specific_problem: asks for help or advice about a named thing (a product, vendor, vulnerability, API, error message, detection name, process, file, setting or role); naming an app or phone alone does not count
+vague_worry: describes a scare or symptom with no named thing, only what they saw or felt, and asks whether something is wrong
+reasoned_opinion: states or clearly implies a position and gives at least one reason or checkable fact, even if the post ends with a question
+broad_question: asks an open-ended question for general advice, opinions or experiences, where no particular named thing is the subject
