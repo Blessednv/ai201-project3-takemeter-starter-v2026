@@ -42,6 +42,30 @@
 <!-- Your community, and what your classifier sorts posts into. Three or four
      sentences. -->
 
+My community is cybersecurity Reddit, which is public and not tied to one show
+or release. I have 426 clean posts and 98 comments, all text only, saved in
+three CSV files that I'm keeping. I leave out any post that contains a link.
+Most of them are link-only news posts with almost no text to judge, and links
+also make the labeling less consistent. The classifier reads a post and
+sorts it into one of four labels based on what the writer included:
+`specific_problem` (asking for help with a detailed problem), `vague_worry`
+(worried but gives no details), `reasoned_opinion` (sharing an opinion with a
+reason) or `broad_question` (asking a general question).
+
+**Four distinctions I saw in the text:**
+
+1. Specific names vs. general description. Some posts name an exact tool, error
+   or setup, like "M-PESA Daraja callbacks" or "Trojan:JS/EtherHiding". Others
+   only say "I clicked something and ads keep popping up".
+2. Says what they already tried. Some posts list steps taken, like
+   disconnecting the PC and changing passwords. Others go straight to "should I
+   be worried?".
+3. Gives a reason or a position. Some posts explain why they think something.
+   Others only ask "has your company changed anything?".
+4. One narrow question vs. a broad one. "Which request attributes must the PDP
+   source independently?" has one answer to look for. "Which certs should I
+   get?" is open-ended.
+
 
 
 ---
@@ -54,33 +78,121 @@
      The decision rule is worth a point on its own and it's the thing most
      people leave out. Every taxonomy has a hardest boundary. Name yours. -->
 
-### `label_one`
+Each post gets exactly one of four labels. The labels describe what is in the
+text (what the writer included), not whether the post is "good" or "bad". A
+"technical specific" below means a concrete detail an expert could look up or
+check: an error message, a detection name, a program or process name, a file, a
+setting, or a named API. Naming a phone or an app alone (like "iPhone" or
+"TikTok") does not count.
 
-**Definition:**
+### `specific_problem`
 
-**Example 1:**
->
-
-**Example 2:**
->
-
-### `label_two`
-
-**Definition:**
+**Definition:** The writer asks for help with a situation and names at least
+one technical specific.
 
 **Example 1:**
+> "I started getting a captcha when I opened google chrome incognito tab ...
+> windows defender picked up on this: Trojan:JS/EtherHiding,CX!ams ... the
+> threat was removed and I've wiped my chrome's cookies and data from all time,
+> and also changed all passwords from another device."
 >
+> *(r/cybersecurity_help. It names the exact detection and says what was
+> already done.)*
 
 **Example 2:**
+> "I build systems that receive payment confirmations from Safaricom's M-PESA
+> Daraja API (STK Push and C2B callbacks). As far as I can tell, Daraja doesn't
+> send an HMAC signature or similar with its callbacks ..."
 >
+> *(r/AskNetsec. It names the API and lists the protections already in use.)*
+
+### `vague_worry`
+
+**Definition:** The writer describes a scare or symptom with no technical
+specifics, only what they saw or felt, and asks whether something is wrong.
+What the person did, like "I hung up", does not count as a technical detail.
+
+**Example 1:**
+> "recently ive clicked a suspicious link, i have clicked something and all of
+> the ads keep popping up and it even redirected me to my apps like, shein
+> tiktok, etc. do yall think i have a virus?"
+>
+> *(r/cybersecurity_help. No error, file or program is named.)*
+
+**Example 2:**
+> "Okay so I just got a message that my tiktok was trying to be accessed and
+> panicked but then realized that it said the username was [a username] and im
+> super confused, should I be worried?"
+>
+> *(r/cybersecurity_help. A scare with no detail to check. I removed the
+> username.)*
+
+### `reasoned_opinion`
+
+**Definition:** The writer states, or clearly hints at, a position and gives at
+least one reason or checkable fact for it, even if the post ends with a
+question.
+
+**Example 1:**
+> "Sat through enough demos this year that I've started using a short checklist
+> to filter vendors ... If the honest answer involves an SDK, a proxy, or code
+> changes, that's not 'runtime,' that's integration work with extra marketing.
+> ... Input filtering alone misses anything novel ..."
+>
+> *(r/AskNetsec. Every point on the checklist comes with a reason.)*
+
+**Example 2:**
+> "Is it just me, or are we being gaslit into thinking its practical and
+> productive to provide Hermes agents API keys to an OPNSense router so it can
+> fully manage it? Even if its doesn't do anything nefarious, if using a cloud
+> LLM to back Hermes, your networking info is being sent to the cloud."
+>
+> *(r/cybersecurity. It takes a side and gives a reason for it.)*
+
+### `broad_question`
+
+**Definition:** The writer asks for general advice or opinions that anyone could
+answer without examining the writer's own system, even if they add some
+background.
+
+**Example 1:**
+> "I see lots of articles and discussions on AI-enabled traditional
+> cybersecurity pentesting, but what a people doing or using for AI-security
+> pentesting?"
+>
+> *(r/AskNetsec. One open question with no setup described.)*
+
+**Example 2:**
+> "about five months ago, I started my journey in IT ... So far, I've learned
+> Python, SQL, and a little bit of C ... I want to know which certifications I
+> should pursue, what skills I need to develop ..."
+>
+> *(r/cybersecurity. Some background, but the question is open to anyone.)*
 
 ### The hardest boundary
 
-**Which two labels:**
+**Which two labels:** `reasoned_opinion` and `broad_question`.
+
+**The post that sits between them (r/AskNetsec):**
+> "Why do so many recent breaches start with a leaked API token or service
+> account? Going through breach reports from the last year and it's the same
+> story over and over. Leaked API tokens and OAuth apps nobody remembered
+> approving. Nobody phished a person, just found a key under the mat... Are non
+> human identities the easiest way in now and what are you doing about the ones
+> nobody owns?"
+
+It could be a `reasoned_opinion`, because the writer points to a pattern from
+breach reports. It could also be a `broad_question`, because it ends by asking
+everyone for general advice.
 
 **The decision rule I used every time:**
 <!-- e.g. "If the post names a specific checkable fact, it's `analysis`, even
      if the tone is heated." -->
+Remove the final question. If a claim with a reason or a checkable fact is
+still left, the post is `reasoned_opinion`. If nothing is left but the question,
+it is `broad_question`. The post above keeps its claim (breach reports show the
+same pattern: leaked tokens and forgotten apps, not phishing), so I label it
+`reasoned_opinion`.
 
 
 
