@@ -377,6 +377,18 @@ first run's results are saved as `results_run1.json`. After the run, I will
 report which numbers changed against the first run and by how much. I will not
 change my criteria in `criteria.md` because of either run.
 
+**What moved (second run, 5 epochs, vs. 3 epochs).** The second run's results are
+saved as `results_run2.json`. On the same 65 test posts, accuracy went from 0.585
+to 0.569 (-0.015, one post fewer correct, 38 to 37) and macro F1 from 0.481 to
+0.463 (-0.018). By label: `specific_problem` F1 fell from 0.500 to 0.444,
+`vague_worry` from 0.769 to 0.741, `broad_question` rose from 0.655 to 0.667, and
+`reasoned_opinion` stayed at 0.000: the model never predicted that label in
+either run. The confidence result was identical. Validation accuracy rose from
+0.569 to 0.600, so more epochs helped on the validation posts but not on the
+test posts. With 65 test posts, one post is worth about 1.5 points, so I read
+these changes as small, and the one clear finding is that more training did not
+fix `reasoned_opinion`.
+
 **Split sizes:** <!-- train / val / test, and per-label counts in the test
 split. If a label had fewer than about 8 in test, say so — it explains a lot
 of next unit's variance. -->
