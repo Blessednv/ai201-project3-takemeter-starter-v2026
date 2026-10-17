@@ -410,19 +410,45 @@ lot between runs.
      workflow and disclosing it costs you nothing. Not disclosing it is the
      problem. -->
 
-**Moment 1**
+**Moment 1: testing my label definitions**
 
-- *What I asked for:*
-- *What came back:*
-- *What I changed:*
+- *What I asked for:* a fresh Claude, which had not seen my labels, to label my 50
+  cold posts using only my four definitions, so I could see where my definitions
+  were unclear.
+- *What came back:* it agreed with me on 64% (32 of 50). Most of the disagreement
+  was on `specific_problem`, which it often called `broad_question` or
+  `reasoned_opinion`.
+- *What I changed:* I tried a broader `specific_problem` definition, which made
+  agreement worse (52%), so I rejected it. A narrower version, requiring a named
+  thing as the subject of the question, raised it to 72%. I kept that one and
+  updated the README and `label_definitions.txt`.
 
-**Moment 2**
+**Moment 2: AI pre-labelling 378 posts**
 
-- *What I asked for:*
-- *What came back:*
-- *What I changed:*
+- *What I asked for:* fresh Claudes, in batches, to suggest a label, an unsure
+  flag and a one-sentence reason for each of my remaining 378 posts, using only
+  my definitions.
+- *What came back:* a label for every post. One batch looked wrong, with 62%
+  `specific_problem` when the others had about 30%, so I had it relabelled and
+  used the second version.
+- *What I changed:* I read the rows and checked every label, and corrected 2. I
+  marked each row in the note column as `pre-labeled, checked` or
+  `pre-labeled, corrected`.
+
+**Moment 3: help with hard cases**
+
+- *What I asked for:* Claude's view on some hard posts, and suggested wording for
+  the reasons in my hard-case notes.
+- *What came back:* arguments for the other label, and draft reason sentences.
+- *What I changed:* I chose the labels myself. For several notes, I used or
+  adapted Claude's wording.
 
 **Pre-labelling disclosure:**
+I labelled the first 50 posts cold, by hand, with no AI help on the labels. The
+other 378 posts were pre-labelled by AI from my written definitions. I read and
+checked every one and corrected 2, and the note column records which rows were
+pre-labelled. Claude also wrote the scripts I used to collect the posts and to
+label them, and helped draft my README text.
 
 <!-- ═══════════════════════ UNIT 6 — THE TEST ═══════════════════════
 
