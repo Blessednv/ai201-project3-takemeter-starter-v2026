@@ -88,6 +88,25 @@ check: a product, vendor, vulnerability (like a CVE), API, error message,
 detection name, process, file, setting or role. Naming a phone or an app alone
 (like "iPhone" or "TikTok") does not count.
 
+**Why four labels, and why I chose them early.** I started with four labels from
+the beginning, not three, and I wrote all four into this README (my first README
+commit, before I collected or labelled any data). While reading 36 posts I could
+point at four different things in the text: whether the writer names something
+specific, whether they say what they already tried, whether they give a reason,
+and whether the question is narrow or open-ended. Four labels was the smallest
+set that kept those differences apart. I settled on four because of what I saw in
+the posts, not because of the grading criteria, and I had not looked at the
+stretch section when I decided.
+
+The fourth label, the one three labels would have missed, is `broad_question`.
+My first three kinds of post were people asking for help about a named thing
+(`specific_problem`), people describing a scare with no details (`vague_worry`),
+and people arguing a position with a reason (`reasoned_opinion`). Those left out a
+large group: open-ended questions for general advice or experiences that name
+nothing, and are neither a scare nor an argument. That group became
+`broad_question`, and it turned out to be my largest label (141 of 428 posts,
+32.9%). Without it, about a third of my posts would have had no label that fit.
+
 ### `specific_problem`
 
 **Definition:** The writer asks for help or advice about a named thing: a
@@ -338,15 +357,33 @@ These are six of the 14 hard cases I recorded. All 14 are in `hard_cases.csv`.
 
 <!-- Your starting model, your settings, and anything you changed and why. -->
 
-**Base model:**
+**Base model:** `distilbert-base-uncased`, fine-tuned for 4-way classification.
 
 **Settings:** <!-- epochs, learning rate, batch size, seed -->
+First run: 3 epochs, learning rate 2e-5, batch size 16, 128 tokens per post,
+seed 42. Trained on an Apple Silicon GPU (`mps`), PyTorch 2.2.2, taking 3
+minutes 41 seconds.
 
 **Anything I changed from the defaults, and why:**
+**First run:** nothing. I used every notebook default.
+
+**Second run (the stretch, declared before running it):** I will change exactly
+one setting: **epochs, from 3 to 5.** In the first run, the loss was still
+falling at epoch 3 (training loss 1.36, 1.15, then 1.04), and validation
+accuracy and F1 were still rising, so I want to see whether more training
+helps. Everything else stays the same: seed 42, so the split and the 65 test
+posts are identical, plus learning rate 2e-5, batch size 16 and 128 tokens. The
+first run's results are saved as `results_run1.json`. After the run, I will
+report which numbers changed against the first run and by how much. I will not
+change my criteria in `criteria.md` because of either run.
 
 **Split sizes:** <!-- train / val / test, and per-label counts in the test
 split. If a label had fewer than about 8 in test, say so — it explains a lot
 of next unit's variance. -->
+298 train, 65 validation and 65 test. Test posts per label: `specific_problem` 20,
+`vague_worry` 13, `reasoned_opinion` 10, `broad_question` 22. No label has fewer
+than 8 test posts, but `reasoned_opinion` has only 10, so its score will move a
+lot between runs.
 
 
 
