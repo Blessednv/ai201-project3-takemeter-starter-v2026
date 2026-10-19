@@ -457,6 +457,16 @@ label them, and helped draft my README text.
 
 ---
 
+## Stretch Goals (Unit 6)
+
+I am adding one stretch feature in this unit:
+
+- **Per-label error write-up:** for whichever label my confusion matrix
+  shows is worst, I will write which label it gets confused with and what
+  the wrong examples have in common.
+
+---
+
 ## Baseline vs. Trained
 
 <!-- Both models on the same posts. `python baseline.py --trained results.json`
