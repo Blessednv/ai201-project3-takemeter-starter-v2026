@@ -474,18 +474,25 @@ I am adding one stretch feature in this unit:
 
 | Measure | Baseline | Trained | Difference |
 |---|---|---|---|
-| Overall accuracy |  |  |  |
-| Macro F1 |  |  |  |
-| F1 — `label_one` |  |  |  |
-| F1 — `label_two` |  |  |  |
+| Overall accuracy | 0.185 | 0.585 | +0.400 |
+| Macro F1 | 0.110 | 0.481 | +0.371 |
+| F1 — `broad_question` | 0.167 | 0.655 | +0.489 |
+| F1 — `reasoned_opinion` | 0.274 | 0.000 | -0.274 |
+| F1 — `specific_problem` | 0.000 | 0.500 | +0.500 |
+| F1 — `vague_worry` | 0.000 | 0.769 | +0.769 |
+
+Both models were scored on the same 65 posts in `test_split.csv`. The baseline
+used my definitions from `label_definitions.txt`.
 
 **What I predicted before I looked:**
 <!-- Milestone 1 asks you to write this BEFORE seeing the trained numbers. A
      prediction made afterwards isn't one. -->
+I predict that my trained model will beat the untrained model by the biggest margin on the labels `specific_problem` and `vague_worry`, because the untrained model scored zero on both of those, meaning it never once got one right. My model has actually studied hundreds of real posts that I labeled myself, so it should have picked up the habits that make a post a "specific problem" (a person describing one concrete thing that went wrong) or a "vague worry" (a person feeling anxious without saying exactly what about), while the untrained model only had my short written definitions to go on and had never seen a single example.
 
 **What the gap actually means:**
 <!-- If the baseline matched your trained model, your fine-tuning added
      nothing — and that is a real finding, not a failure. Say it plainly. -->
+**What my definitions were worth.** To find out whether the written definitions I made for my four labels actually helped, I ran the untrained model twice on the same 65 test posts, changing only one thing. In the first run I gave it my full definitions from `label_definitions.txt`, and it got 18.5% of the posts right (0.185). In the second run I took the definitions away and gave it only the bare label names, such as `vague_worry`, and it got 40.0% right (0.400). The gap between the two is 0.185 minus 0.400, which is −0.215, so my definitions were worth about negative 21 points: they made the untrained model worse, not better. I think this happened because this model does not read a definition the way a person does. It works by checking how well a post "fits" a short phrase, so a short name like "vague worry" gave it a clear target, while my longer descriptions gave it more words to match against and pulled it toward the wrong labels. I know this is a property of the untrained model and not a flaw in my labeling, because my trained model never read the definitions at all. It learned from my labeled examples and scored 0.585, which is higher than both runs. I am keeping the run with definitions (0.185) as my main baseline, since that is the setup the assignment describes, and I am also reporting the stronger names-only run (0.400) so the comparison is honest. My trained model beats both.
 
 
 
