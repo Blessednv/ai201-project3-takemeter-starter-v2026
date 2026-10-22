@@ -1,0 +1,23 @@
+{
+  "compared": 30,
+  "agreed": 27,
+  "agreement_rate": 0.9,
+  "disagreements": [
+    {
+      "text": "Everyone blames the hill at 18 miles. I split the field into people who ran the first half under 1:45 and over, and the slowdown after 18 was almost identical for both groups. If the hill were the problem the fast starters would fall apart harder.",
+      "staff": "analysis",
+      "mine": "hot_take"
+    },
+    {
+      "text": "Three of us ran the same session on the same day, different shoes, within 10 seconds of each other over 5 miles. I'm not saying shoes do nothing, but whatever they do was smaller than the noise between three people.",
+      "staff": "analysis",
+      "mine": "hot_take"
+    },
+    {
+      "text": "The club needs to stop pretending the Tuesday session is for everyone. It isn't and it never has been.",
+      "staff": "hot_take",
+      "mine": "reaction"
+    }
+  ],
+  "staff_posts_not_in_mine": 0
+}
