@@ -465,6 +465,22 @@ I am adding one stretch feature in this unit:
   shows is worst, I will write which label it gets confused with and what
   the wrong examples have in common.
 
+### Per-label error write-up: `reasoned_opinion`
+
+My worst label was `reasoned_opinion`, with an F1 of 0.000 in all three seeds.
+
+**Which label it was confused with:** across the three seeds, 7, 9 and 9 of its 10 test posts were called `broad_question`, and the rest `specific_problem`. The model never predicted `reasoned_opinion` once.
+
+**What the wrong examples have in common:** I read the 10 `reasoned_opinion` posts in the seed 42 test set. Each makes an argument or describes a real experience in the body, but 7 of the 10 end by asking the community something. Five end with a question mark, for example:
+
+> "...What's your retention, and did you have to fight for it?"
+>
+> "...What part of the account lifecycle has caused the most trouble in your experience?"
+
+Two more end with a request for input and no question mark, for example "am interested to hear what you'd leave out of phase one". The other three end on a statement, so the pattern is not universal.
+
+My own rule is to remove the final question and judge the argument underneath. The model has no such rule, so my best explanation is that the closing question looks like `broad_question`. I can't prove that. Only 50% of `reasoned_opinion` test posts end with a question mark, against 55% of `broad_question` posts, so the question alone cannot be the whole reason, and `reasoned_opinion` was also my smallest label (66 posts).
+
 ---
 
 ## Baseline vs. Trained
