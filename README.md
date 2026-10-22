@@ -503,6 +503,24 @@ I predict that my trained model will beat the untrained model by the biggest mar
 <!-- Five criteria across three seeds. The notebook's section 6 prints the
      spread table; the Target and Verdict columns are yours. -->
 
+**Spread table from the notebook (section 6).** Device: `mps` (Apple Silicon
+GPU), torch 2.2.2. Seeds 42, 7 and 2024, on the held-out posts of each seed's
+own split.
+
+| Measure | Seed 42 | Seed 7 | Seed 2024 | Spread |
+|---|---|---|---|---|
+| Overall accuracy | 0.585 | 0.569 | 0.662 | 0.092 |
+| Macro F1 | 0.481 | 0.454 | 0.549 | 0.094 |
+| F1 — `specific_problem` | 0.500 | 0.345 | 0.606 | 0.261 |
+| F1 — `vague_worry` | 0.769 | 0.828 | 0.889 | 0.120 |
+| F1 — `reasoned_opinion` | 0.000 | 0.000 | 0.000 | 0.000 |
+| F1 — `broad_question` | 0.655 | 0.645 | 0.700 | 0.055 |
+
+Accuracy moved 0.092 across seeds. Enough that a criterion landing within that
+band can't really be called either way.
+
+**Run log:**
+
 | Criterion | Target | Seed 42 | Seed 7 | Seed 2024 | Verdict |
 |---|---|---|---|---|---|
 | 1.  |  |  |  |  |  |
@@ -516,16 +534,25 @@ I predict that my trained model will beat the untrained model by the biggest mar
 <!-- ⚠️ TYPED AS A MARKDOWN TABLE. The notebook prints one ready to paste.
      An image of a matrix earns nothing. -->
 
-| true \ predicted |  |  |  |
-|---|---|---|---|
-| **** |  |  |  |
-| **** |  |  |  |
-| **** |  |  |  |
+Seed 42, 65 held-out posts, device `mps`. Rows are true labels, columns are
+the model's guesses.
+
+| true \ predicted | specific_problem | vague_worry | reasoned_opinion | broad_question |
+|---|---|---|---|---|
+| **specific_problem** | 9 | 2 | 0 | 9 |
+| **vague_worry** | 2 | 10 | 0 | 1 |
+| **reasoned_opinion** | 3 | 0 | 0 | 7 |
+| **broad_question** | 2 | 1 | 0 | 19 |
 
 **My biggest off-diagonal number, and what it means:**
 <!-- Not "the model made mistakes" — WHICH boundary it didn't learn, and which
      direction. "7 real analysis posts were called hot_take and only 3 went the
      other way" is a direction, not just an error rate. -->
+The biggest number off the diagonal is 9: nine real `specific_problem` posts were called `broad_question` by the model, while only 2 real `broad_question` posts went the other way. That is a direction, not just an error rate. It means the model did not learn where the line between those two labels sits, and when it is unsure it falls back on `broad_question`. Of my 20 `specific_problem` test posts, only 9 were right, so nearly half of them were read as a broad question instead. The model is very good at the opposite case, getting 19 of 22 `broad_question` posts right, which fits a model that has learned to say `broad_question` often.
+
+A second, bigger problem shows in the `reasoned_opinion` row and column. The model never guessed `reasoned_opinion` even once, so that whole column is zeros and all 10 of my real `reasoned_opinion` posts were wrong: 7 were called `broad_question` and 3 were called `specific_problem`. This matches the F1 of 0.000 for `reasoned_opinion` in all three seeds, so it is not bad luck on one split. The model treats `reasoned_opinion` as a kind of `broad_question`, which is the boundary I already expected to be my hardest one when I wrote my criteria.
+
+`vague_worry` is the cleanest label: 10 of its 13 posts were right. This matrix is from seed 42 only, so I will check it against the other two seeds, and against my agreement report, before I decide whether the cause is the model, my labels, or too few examples. I am not claiming a cause yet.
 
 
 
@@ -567,7 +594,7 @@ I predict that my trained model will beat the untrained model by the biggest mar
      data/staff_taxonomy.md, not your own — so every argument below is made
      from those definitions and those decision rules. -->
 
-**Agreement rate:** ___ / 30 = ___%
+**Agreement rate:** 27 / 30 = 90%
 
 <!-- Nobody grades this number. A 60% who argues every disagreement from the
      stated rules beats a 95% who wrote "staff was right" nine times. Several
@@ -590,22 +617,31 @@ I predict that my trained model will beat the untrained model by the biggest mar
      what you did across your own 200. -->
 
 **1.**
-> *The post:*
+> *The post:* "Everyone blames the hill at 18 miles. I split the field into people who ran the first half under 1:45 and over, and the slowdown after 18 was almost identical for both groups. If the hill were the problem the fast starters would fall apart harder."
 >
-> *Staff said / I said:*
+> *Staff said / I said:* `analysis` / `hot_take`
 >
-> *My call, and why:*
+> *My call, and why:* The staff rules say a post is "analysis" only if it backs its argument with a fact you can actually check. Here, the writer tells us how they split the runners into two groups (1:45 for the first half), but then never tells us the numbers that matter: how much each group slowed down. The post only says the slowdown was "almost identical". That is the whole point of the argument, and we're asked to take it on trust. So I read it as a confident claim that sounds like research, which the rules call a "hot_take". I can see why staff chose analysis. The writer did set up a comparison, and the last sentence follows from it. The rules also don't say how much of the result has to be written out. So I think staff's reading is reasonable, but mine is defensible too.
 >
-> *Which pile:*
+> *Which pile:* (c). The rule is open to two readings here, and mine is defensible.
 
 **2.**
-> *The post:*
+> *The post:* "Three of us ran the same session on the same day, different shoes, within 10 seconds of each other over 5 miles. I'm not saying shoes do nothing, but whatever they do was smaller than the noise between three people."
 >
-> *Staff said / I said:*
+> *Staff said / I said:* `analysis` / `hot_take`
 >
-> *My call, and why:*
+> *My call, and why:* I think staff is right. The staff rules say a post is "analysis" when it backs its point with a fact you can check, and the fact is the reason for the conclusion. This writer did exactly that. They gave a specific result: three runners, the same session, different shoes, all within 10 seconds over 5 miles. Their conclusion, that shoes matter less than the normal differences between runners, comes straight from that result. Take the 10-second gap away and the writer would have nothing to say. The writer is also careful. They say "I'm not saying shoes do nothing", which is not how someone sounds when they only want to announce an opinion. I labeled it hot_take mainly because three runners is a very small test. But the staff rules say nothing about how big a test has to be. They only ask whether the fact carries the argument, and here it does. So I judged the post by something the rule doesn't ask for.
 >
-> *Which pile:*
+> *Which pile:* (a). The rule covered it, and I applied it loosely.
+
+**3.**
+> *The post:* "The club needs to stop pretending the Tuesday session is for everyone. It isn't and it never has been."
+>
+> *Staff said / I said:* `hot_take` / `reaction`
+>
+> *My call, and why:* I think staff is right. The staff rules say a "reaction" is about something that just happened to the writer, and a "hot_take" is a general statement about how things are. This post is about the club, not about the writer. It doesn't describe anything that just happened, and "it never has been" looks back over a long time. I labeled it a reaction because it sounded frustrated, and because it mentions the Tuesday session. But a regular club session isn't a recent event, and the rules say a heated post is still a hot_take if it makes a general claim.
+>
+> *Which pile:* (a). The rule covered it, and I applied it loosely.
 
 **What the pattern in my disagreements tells me:**
 
