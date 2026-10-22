@@ -523,11 +523,11 @@ band can't really be called either way.
 
 | Criterion | Target | Seed 42 | Seed 7 | Seed 2024 | Verdict |
 |---|---|---|---|---|---|
-| 1.  |  |  |  |  |  |
-| 2.  |  |  |  |  |  |
-| 3.  |  |  |  |  |  |
-| 4.  |  |  |  |  |  |
-| 5.  |  |  |  |  |  |
+| 1. Overall accuracy | ≥ 0.60 in all three seeds, and ≥ 0.15 above always guessing the biggest label | 0.585 | 0.569 | 0.662 | MISSED |
+| 2. Every label's F1 | ≥ 0.50 for every label | 0.000 (lowest: `reasoned_opinion`) | 0.000 (lowest: `reasoned_opinion`) | 0.000 (lowest: `reasoned_opinion`) | MISSED |
+| 3. Label balance | every label between 15% and 50% of my posts | 15.4% to 32.9% | 15.4% to 32.9% | 15.4% to 32.9% | MET |
+| 4. Self-agreement | ≥ 32 of 40 relabeled posts match my first labels (80%) | 30 of 40 (75%), one check, not tied to a seed | same check | same check | MISSED |
+| 5. Confidence | ≥ 75% correct among predictions at ≥ 80% confidence, at least 10 of them | 0.714 (most-confident third, stand-in) | 0.619 (most-confident third, stand-in) | 0.667 (most-confident third, stand-in) | MISSED |
 
 ### Confusion matrix
 
@@ -565,11 +565,11 @@ A second, bigger problem shows in the `reasoned_opinion` row and column. The mod
 
 | # | Criterion | Target | Verdict | How I decided |
 |---|---|---|---|---|
-| 1 |  |  |  |  |
-| 2 |  |  |  |  |
-| 3 |  |  |  |  |
-| 4 |  |  |  |  |
-| 5 |  |  |  |  |
+| 1 | Overall accuracy | ≥ 0.60 in all three seeds, and ≥ 0.15 above always guessing the biggest label | MISSED | 0.585, 0.569 and 0.662: only seed 2024 reaches 0.60, and the target has to hold in all three |
+| 2 | Every label's F1 | ≥ 0.50 for every label in all three seeds | MISSED | `reasoned_opinion` is 0.000 in all three seeds, and `specific_problem` is 0.345 in seed 7 |
+| 3 | Label balance | Every label between 15% and 50% of my posts | MET | The biggest label is 33% and the smallest is 15.4%, so all four are in range |
+| 4 | Self-agreement | Agree with my own first labels on at least 32 of 40 relabeled posts (80%) | MISSED | 30 of 40 relabeled posts kept the same label (75%), 2 short of the target |
+| 5 | Confidence | ≥ 75% correct among predictions at ≥ 80% confidence, with at least 10 such predictions | MISSED | Stand-in measure: the most-confident third was 0.714, 0.619 and 0.667 correct, below 0.75 in every seed |
 
 **Diagnoses**
 
@@ -581,6 +581,16 @@ A second, bigger problem shows in the `reasoned_opinion` row and column. The mod
      ⚠️ Use your agreement report as evidence. It is the only instrument you
      have that can tell a LABELLING problem from a MODEL problem, and this
      section is graded on whether you used it that way. -->
+
+**Criterion 1: MISSED.** Accuracy was 0.585, 0.569 and 0.662, so only seed 2024 reached 0.60. The main cause is one label the model never learned. `reasoned_opinion` scored 0.000 on precision, recall and F1 in all three seeds, so all 10 of its test posts were wrong every time. If those 10 had been right, seed 42 would have scored about 0.74 (48 of 65) instead of 0.585. My confusion matrix for seed 42 shows where they went: 7 into `broad_question` and 3 into `specific_problem`. The model also over-uses `broad_question` as a default. Across the three seeds its recall is high (0.86 to 0.95) but its precision is low (0.50 to 0.55), and in seed 42 it also swallowed 9 real `specific_problem` posts. The counts fit this: `reasoned_opinion` is my smallest label (66 of 428 posts, 15%, less than half of the 141 `broad_question` posts), and `broad_question` is my largest (33%). So I think the cause is too few examples of `reasoned_opinion`, together with a hard boundary between it and `broad_question`, which I already expected to be my fuzziest. I can't say my own labeling was inconsistent. My agreement check used the staff's posts and labels, and my two pile (a) slips were on other labels. It does show I can apply a written rule loosely, so I treat inconsistency as a possible extra cause, not a proven one.
+
+**Criterion 2: MISSED.** The target was an F1 of at least 0.50 for every label in all three seeds. Two labels fell short. `reasoned_opinion` scored 0.000 in all three seeds. The model never predicted it once, and 7, 9 and 9 of its 10 test posts were called `broad_question`, with the rest called `specific_problem`. `specific_problem` scored 0.500, 0.345 and 0.606, so it missed in seed 7 alone. The two misses have different causes. For `reasoned_opinion`, I think the cause is too few examples combined with a hard label pair. It is my smallest label (66 of 428 posts), and the model never learned to separate it from `broad_question`, even though `vague_worry` learned well from only 87 posts. For `specific_problem`, too few examples doesn't fit, since it has 134 posts. Its recall is low and unstable (0.45, 0.25, 0.50), and it loses 9, 11 and 8 test posts to `broad_question`, so the issue is that boundary. A caveat: with only 20 test posts, one split can swing its F1 a lot, which fits the 0.26 spread across seeds.
+
+**Criterion 3: MET.** My rule was that no label should have more than half of my posts, and none should have fewer than 15%, so that no label would be too big to dominate or too small to learn. I have 428 labeled posts. `broad_question` has 141 (32.9%), `specific_problem` has 134 (31.3%), `vague_worry` has 87 (20.3%) and `reasoned_opinion` has 66 (15.4%). All four are inside the range, so the criterion is met. The count describes my whole dataset, so it is the same in all three seeds. It was a close pass. Fifteen percent of 428 posts is about 64, and `reasoned_opinion` has 66, so it clears the minimum by only about two posts. That matters because `reasoned_opinion` is the label the model failed to learn in criteria 1 and 2. My rule technically held, but the 15% floor was too low to guarantee enough examples for the model to learn a label. I would not change this criterion, since it was measurable and I met it, but it is a clue for my diagnosis.
+
+**Criterion 4: MISSED.** The target was to agree with my own first labels on at least 32 of 40 relabeled posts (80%). I relabeled 40 of my 50 hand-labeled posts without looking at my first labels, and 30 kept the same label (75%), so I missed by 2 posts. I did not save the relabels as a file, so this rests on my own count. For 5 of the changed posts I kept the details, and all 5 involved `specific_problem`: three were swaps with `broad_question` in both directions, one went to `vague_worry` and one to `reasoned_opinion`. `vague_worry` was my most stable label. The cause is a boundary I applied inconsistently. My second rule says a named thing must be the real subject of the question for a post to be `specific_problem`, and I did not apply it the same way twice. This likely contributes to the model's errors in criteria 1 and 2: across the three seeds it lost 9, 11 and 8 `specific_problem` test posts to `broad_question`, with F1 scores of 0.500, 0.345 and 0.606. I cannot say how much, because the pair may also be hard on its own, and 20 test posts is a small sample.
+
+**Criterion 5: MISSED.** The target was that, among predictions where the model is at least 80% confident, at least 75% are correct, with at least 10 such predictions. The notebook saves a summary of the model's confidence for each seed, not a confidence for every prediction, so I could not count the predictions at 80% or more. As a stand-in, I used the model's most-confident third of predictions (21 per seed). Those were 0.714, 0.619 and 0.667 correct, so even the most confident group misses 0.75 in all three seeds. The evidence points to a model that is rarely sure about anything: its average confidence was only 0.40 to 0.44, so very few predictions can have reached 80%. Its confidence also says little about whether it is right: the average confidence on correct predictions (0.440, 0.433, 0.399) was almost the same as on wrong ones (0.415, 0.419, 0.393). I think the cause is that this is a hard four-label task for a small model trained on under 300 posts, which is the "task the model can't reach from this much data" cause. It was not clearly inconsistent labeling, since my agreement check was on the staff's labels and not my own. There is some signal, because the most-confident third beat the least-confident third in every seed (0.714 against 0.476, 0.619 against 0.476, 0.667 against 0.571), but not enough to reach the target.
 
 
 
