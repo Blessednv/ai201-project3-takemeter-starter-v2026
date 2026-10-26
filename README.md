@@ -677,24 +677,27 @@ A second, bigger problem shows in the `reasoned_opinion` row and column. The mod
 
 ## The Improvement
 
-**What I changed:**
+**What I changed:** I re-checked the 34 posts that I had labeled by hand with no AI help and that carried either `specific_problem` or `broad_question`, and applied my one rule the same way to each: if a named thing is the subject of the question, it's `specific_problem`, otherwise `broad_question`. 10 rows changed (8 from `specific_problem` to `broad_question`, 2 the other way). Nothing else was changed: not my taxonomy, my criteria, or any training setting.
 
-**Which diagnosis pointed at it:**
+**Which diagnosis pointed at it:** Criterion 4. When I relabeled 40 of my own posts, I matched my first labels on only 30 (75%), and the changes were mostly swaps between these two labels. That fits criterion 2, where `specific_problem` lost 9, 11 and 8 test posts to `broad_question`.
 
 ### Run Log — After
 
+Same device (`mps`, Apple Silicon GPU) and same seeds as the before run. Written to `results_three_seeds_after.json`.
+
 | Criterion | Target | Seed 42 | Seed 7 | Seed 2024 | Verdict |
 |---|---|---|---|---|---|
-| 1.  |  |  |  |  |  |
-| 2.  |  |  |  |  |  |
-| 3.  |  |  |  |  |  |
-| 4.  |  |  |  |  |  |
-| 5.  |  |  |  |  |  |
+| 1. Overall accuracy | ≥ 0.60 in all three seeds, and ≥ 0.15 above always guessing the biggest label | 0.585 | 0.569 | 0.615 | MISSED |
+| 2. Every label's F1 | ≥ 0.50 for every label | 0.000 (lowest: `reasoned_opinion`) | 0.000 (lowest: `reasoned_opinion`) | 0.000 (lowest: `reasoned_opinion`) | MISSED |
+| 3. Label balance | every label between 15% and 50% of my posts | 15.4% to 34.3% | 15.4% to 34.3% | 15.4% to 34.3% | MET |
+| 4. Self-agreement | ≥ 32 of 40 relabeled posts match my first labels (80%) | not re-measured | not re-measured | not re-measured | MISSED (unchanged from the before run) |
+| 5. Confidence | ≥ 75% correct among predictions at ≥ 80% confidence, at least 10 of them | 0.810 (most-confident third, stand-in) | 0.714 (most-confident third, stand-in) | 0.762 (most-confident third, stand-in) | MISSED |
 
 **Did it help, and how do I know:**
 
 <!-- If it didn't, say so. Relabelling that didn't help is a genuinely
      interesting result and earns full credit. -->
+It helped a little in one place and not in others, so I would call it a mixed result. After I made the labels for the `specific_problem` / `broad_question` boundary consistent (10 rows changed), the model's overall accuracy did not improve: it stayed at 0.585 and 0.569 on two seeds and fell from 0.662 to 0.615 on the third. No verdict changed. But `specific_problem` became steadier: its F1 went from 0.500, 0.345 and 0.606 to 0.500, 0.550 and 0.500, so the gap between my best and worst seed shrank from 0.261 to 0.050, and it now reaches 0.50 on every seed. The model also leaned less on `broad_question`. Its recall dropped from 0.86, 0.91 and 0.95 to 0.77, 0.77 and 0.95 on the three seeds, and the confusion between the two labels became more even: in seed 42, 8 `specific_problem` posts were called `broad_question` and 5 went the other way, where before it was 9 and 2. I cannot say these small changes are real. Only 10 rows changed, my seeds already swing by several points, and a few of the test posts had their labels changed too, so the before and after test sets are not perfectly identical. `reasoned_opinion` stayed at 0.000 in every seed, which is expected because this change did not target it.
 
 
 
