@@ -487,13 +487,18 @@ label them, and helped draft my README text.
 
 ## Stretch Goals (Unit 6)
 
-I am adding one stretch feature in this unit:
+I am adding two stretch features in this unit:
 
-- **Per-label error write-up:** for whichever label my confusion matrix
-  shows is worst, I will write which label it gets confused with and what
-  the wrong examples have in common.
+- **Stretch Feature 1: Per-label error write-up:** for whichever label my
+  confusion matrix shows is worst, I will write which label it gets confused
+  with and what the wrong examples have in common.
+- **Stretch Feature 2: Confidence check:** the README reports whether the
+  model's confident predictions are right more often than its unsure ones, with
+  the numbers behind the comparison.
 
-### Per-label error write-up: `reasoned_opinion`
+### Stretch Feature 1: Per-label error write-up (`reasoned_opinion`)
+
+This is my first stretch feature for Unit 6.
 
 My worst label was `reasoned_opinion`, with an F1 of 0.000 in all three seeds.
 
@@ -508,6 +513,22 @@ My worst label was `reasoned_opinion`, with an F1 of 0.000 in all three seeds.
 Two more end with a request for input and no question mark, for example "am interested to hear what you'd leave out of phase one". The other three end on a statement, so the pattern is not universal.
 
 My own rule is to remove the final question and judge the argument underneath. The model has no such rule, so my best explanation is that the closing question looks like `broad_question`. I can't prove that. Only 50% of `reasoned_opinion` test posts end with a question mark, against 55% of `broad_question` posts, so the question alone cannot be the whole reason, and `reasoned_opinion` was also my smallest label (66 posts).
+
+### Stretch Feature 2: Confidence check
+
+This is my second stretch feature for Unit 6. I split each seed's 65 test predictions into thirds by the model's confidence (21 per third) and compared how often the most-confident third and the least-confident third were right. The numbers are from `results_three_seeds_before.json` and `results_three_seeds_after.json`.
+
+| Seed | Most-confident third, before | Least-confident third, before | Most-confident third, after | Least-confident third, after |
+|---|---|---|---|---|
+| 42 | 0.714 | 0.476 | 0.810 | 0.429 |
+| 7 | 0.619 | 0.476 | 0.714 | 0.571 |
+| 2024 | 0.667 | 0.571 | 0.762 | 0.524 |
+
+**Are confident predictions right more often?** Yes, in all six runs, but not by a lot. The gap between the top and bottom third was 0.238, 0.143 and 0.095 before, and 0.381, 0.143 and 0.238 after. The relabeling made the gap bigger in two of three seeds.
+
+**How much does confidence say about being right?** Not much. The model's average confidence on right predictions was only a little higher than on wrong ones: 0.440 vs 0.415, 0.433 vs 0.419 and 0.399 vs 0.393 before, and 0.452 vs 0.416, 0.429 vs 0.407 and 0.414 vs 0.393 after. The model is rarely sure, with average confidence of about 0.40 to 0.45, so almost no predictions are at 80% or higher. This is why Criterion 5 is still MISSED.
+
+**Caveat:** each third is only 21 posts, so one post moves the score by about 5 points. Differences like 0.619 vs 0.476 could be noise. I can say the direction is the same in every run, not that the size is reliable.
 
 ---
 
