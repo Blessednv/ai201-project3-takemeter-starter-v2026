@@ -443,6 +443,34 @@ lot between runs.
 - *What I changed:* I chose the labels myself. For several notes, I used or
   adapted Claude's wording.
 
+**Moment 4: writing the data collection script**
+
+- *What I asked for:* a Python script to pull recent posts from cybersecurity
+  subreddits without needing a Reddit API key or login.
+- *What came back:* a script that used Reddit's public RSS feeds to collect
+  posts and save them to a CSV file.
+- *What I changed:* I modified the script to specifically target
+  r/cybersecurity, r/AskNetsec, and r/cybersecurity_help, and added filters to
+  drop any posts containing links, images, or empty bodies.
+
+**Moment 5: writing a script to label posts one at a time**
+
+- *What I asked for:* a script that shows me one post at a time so I can label
+  it myself, and saves each label to a file automatically.
+- *What came back:* `label_posts_interactive.py`. It reads `labels.csv`, shows
+  each unlabeled post, takes a label number or name, and writes the label back
+  after every answer. It skips posts that already have a label, so I could stop
+  and resume. A "?" after an answer marks a hard case and saves it to
+  `hard_cases.csv`.
+- *What I changed:* I asked for one change: show my own four labels with every
+  post, so I never had to remember what each number meant. I used the script
+  that way, and I chose it over typing into `labels.csv` by hand, because the
+  posts have several lines and one stray comma or quote could break the file.
+  Seeing one post at a time made it clear which post I was labeling, and each
+  answer was saved straight away, so I made no mistakes with the file or my
+  place in it. It never suggested a label, so every label in my 50 cold posts is
+  mine.
+
 **Pre-labelling disclosure:**
 I labelled the first 50 posts cold, by hand, with no AI help on the labels. The
 other 378 posts were pre-labelled by AI from my written definitions. I read and
@@ -671,6 +699,8 @@ A second, bigger problem shows in the `reasoned_opinion` row and column. The mod
 
 **What the pattern in my disagreements tells me:**
 
+All three disagreements involve `hot_take`: in two I called a post `hot_take` where staff said `analysis`, and in one staff called it `hot_take` where I said `reaction`. The staff rules were ambiguous in only one of them. In post 1 the rules ask for a "load-bearing" checkable fact but don't say whether the result has to be written out, so I think my reading is defensible, and I put it in pile (c). In posts 2 and 3 the rules speak more directly. Rule 1 asks only whether the fact carries the argument and says nothing about how big a test must be, and rule 2 says a heated post is still a `hot_take` if it makes a general claim. In both I let something the rules do not list decide: the small test in post 2 and the frustrated tone in post 3. That is why I put them in pile (a). This fits my own labeling: my 30 of 40 self-agreement in criterion 4 came from a boundary I read differently on different days. With only 30 posts and 3 disagreements, I can't say how large this problem is, only that the same boundary caused all three.
+
 
 
 ---
@@ -707,11 +737,18 @@ It helped a little in one place and not in others, so I would call it a mixed re
 
 <!-- For each criterion still missed: what you'd do, and why you stopped. -->
 
+**Criterion 1 (accuracy), MISSED.** After my improvement, accuracy was 0.585, 0.569 and 0.615, so only seed 2024 reached 0.60. The main cause is `reasoned_opinion`, which the model never predicts. If those 10 test posts had been right, seed 42 would have scored about 0.74. The model also falls back on `broad_question` too often. What I would do: add 30 to 40 new `reasoned_opinion` posts, since it is my smallest label (66 of 428 posts). I stopped because finding, formatting and carefully labeling that many posts would take more time than I had, and the assignment only asked me to test one improvement.
 
+**Criterion 2 (every label's F1 ≥ 0.50), MISSED.** `reasoned_opinion` scored 0.000 in all three seeds. `specific_problem` now reaches 0.50 on every seed after my relabeling, so that label is fixed. What I would do: add the same 30 to 40 new `reasoned_opinion` posts, and write a clearer rule for posts that make an argument but end with a question, because 7 of the 10 test posts did that. I stopped for the same reason as criterion 1.
+
+**Criterion 4 (self-agreement), MISSED.** I matched my first labels on 30 of 40 posts (75%), and I did not re-measure after my relabel. What I would do: rewrite my rule for `specific_problem` versus `broad_question` so it depends less on my own judgment. Then I would relabel the same 40 posts without looking at my first labels and check whether I reach 32. I stopped because changing the rule means re-reading the posts that use it, and I ran out of time.
+
+**Criterion 5 (confidence), MISSED.** I could only measure the most-confident third of predictions, as a stand-in for "at least 80% confident". It was 0.810, 0.714 and 0.762, so seed 7 is still under 0.75 and the stand-in is not the real measure. What I would do: save the model's confidence for every prediction so I can count the ones at 80% or more, and fix the mixed labels from criterion 4, which may reduce the mixed signals the model gets. I have not proven that. I stopped because I had already done my one required improvement.
 
 **The gap between what I meant my labels to capture and what the model
 learned:**
 <!-- Two sentences. Your confusion matrix is the evidence. -->
+I meant `reasoned_opinion` to be its own label, for a post that makes an argument even when it ends with a community question. The model learned to treat it as a kind of `broad_question`: in my seed 42 matrix, 7 of 10 real `reasoned_opinion` posts were called `broad_question`, and it never predicted `reasoned_opinion` once.
 
 
 
